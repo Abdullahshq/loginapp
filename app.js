@@ -21,7 +21,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Express session middleware
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret',
+  secret: 'your-hardcoded-secret-value',  // Replace with a strong random string
   resave: true,
   saveUninitialized: true
 }));

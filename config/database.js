@@ -1,11 +1,12 @@
 const sql = require('mssql');
 
-// Azure SQL Database configuration with Managed Identity
+// Azure SQL Database configuration
 const config = {
-  server: process.env.DB_SERVER,
-  database: process.env.DB_NAME,
+  server: process.env.AZURE_SQL_SERVER,
+  database: process.env.AZURE_SQL_DATABASE,
+  port: parseInt(process.env.AZURE_SQL_PORT, 10),
   authentication: {
-    type: 'azure-active-directory-msi-app-service'
+    type: process.env.AZURE_SQL_AUTHENTICATIONTYPE
   },
   options: {
     encrypt: true
