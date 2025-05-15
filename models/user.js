@@ -1,10 +1,13 @@
-const { sql, poolPromise } = require('../config/database');
+const { sql, poolPromise, isConnected } = require('../config/database');
 const bcrypt = require('bcryptjs');
 
 class User {
   static async findByEmail(email) {
     try {
       const pool = await poolPromise;
+      if (!pool) {
+        throw new Error('Database connection not available');
+      }
       const result = await pool.request()
         .input('email', sql.VarChar, email)
         .query('SELECT * FROM users WHERE email = @email');

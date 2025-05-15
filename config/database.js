@@ -18,18 +18,24 @@ const config = {
 };
 
 // Create connection pool
+let pool = null;
 const poolPromise = new sql.ConnectionPool(config)
   .connect()
-  .then(pool => {
+  .then(p => {
     console.log('Connected to Azure SQL Database');
+    pool = p;
     return pool;
   })
   .catch(err => {
     console.error('Database Connection Failed: ', err);
     console.error('Error details:', err.originalError ? err.originalError : 'No additional details');
+    // Return a rejected promise to ensure errors propagate properly
+    return Promise.reject(err);
   });
 
 module.exports = {
   sql,
-  poolPromise
+  poolPromise,
+  // Add a helper function to check if connection is available
+  isConnected: () => pool !== null
 };
