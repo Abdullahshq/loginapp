@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/style.css">
+  <title>User Registration App</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to the User Registration App</h1>
+    <% if(typeof user !== 'undefined') { %>
+      <p>Welcome, <%= user.name %></p>
+      <a href="/users/logout" class="btn">Logout</a>
+    <% } else { %>
+      <p>Please login or register</p>
+      <div class="buttons">
+        <a href="/users/login" class="btn">Login</a>
+        <a href="/users/register" class="btn">Register</a>
+      </div>
+    <% } %>
+  </div>
+</body>
+</html>
