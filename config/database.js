@@ -3,14 +3,19 @@ const sql = require('mssql');
 const config = {
   server: process.env.AZURE_SQL_SERVER,
   database: process.env.AZURE_SQL_DATABASE,
-  port: parseInt(process.env.AZURE_SQL_PORT, 10),
   user: process.env.AZURE_SQL_USER,
   password: process.env.AZURE_SQL_PASSWORD,
   options: {
     encrypt: true,
     trustServerCertificate: false,
-    connectTimeout: 15000,
-    requestTimeout: 30000
+    connectTimeout: 10000, // Reduced from 15000
+    requestTimeout: 20000, // Reduced from 30000
+    pool: {
+      max: 10,
+      min: 1, // Changed from 0 to maintain warm connections
+      idleTimeoutMillis: 30000,
+      acquireTimeoutMillis: 10000
+    }
   }
 };
 
