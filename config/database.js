@@ -10,10 +10,16 @@ const config = {
   database: process.env.AZURE_SQL_DATABASE,
   port: parseInt(process.env.AZURE_SQL_PORT, 10),
   authentication: {
-    type: 'azure-active-directory-default'
+    type: 'azure-active-directory-default',
+    options: {
+      tokenCredential: credential
+    }
   },
   options: {
-    encrypt: true
+    encrypt: true,
+    trustServerCertificate: false,
+    connectionTimeout: 30000,
+    requestTimeout: 30000
   }
 };
 
