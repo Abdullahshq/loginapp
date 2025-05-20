@@ -33,11 +33,14 @@ const poolPromise = new sql.ConnectionPool(config)
     return pool;
   })
   .catch(err => {
-    console.error('Database Connection Failed: ', err);
-    console.error('Error details:', err.originalError ? err.originalError : 'No additional details');
-    // Return a rejected promise to ensure errors propagate properly
-    return Promise.reject(err);
-  });
+    console.error('FATAL AUTH ERROR:', {
+        code: err.code,
+        message: err.message,
+        details: err.originalError?.info?.message || 'No additional details',
+        stack: err.stack
+    });
+    process.exit(1);
+});
 
 module.exports = {
   sql,
