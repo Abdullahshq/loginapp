@@ -1,25 +1,25 @@
 const sql = require('mssql');
 const { DefaultAzureCredential } = require('@azure/identity');
 
-// Create Azure credential
-const credential = new DefaultAzureCredential();
-
-// Azure SQL Database configuration
 const config = {
   server: process.env.AZURE_SQL_SERVER,
   database: process.env.AZURE_SQL_DATABASE,
-  port: parseInt(process.env.AZURE_SQL_PORT, 10),
   authentication: {
-    type: 'azure-active-directory-default',
+    type: 'azure-active-directory-msi-app-service',
     options: {
-      tokenCredential: credential
+      tokenCredential: new DefaultAzureCredential()
     }
   },
   options: {
     encrypt: true,
     trustServerCertificate: false,
-    connectionTimeout: 30000,
-    requestTimeout: 30000
+    connectTimeout: 15000,
+    requestTimeout: 30000,
+    pool: {
+      max: 10,
+      min: 0,
+      idleTimeoutMillis: 30000
+    }
   }
 };
 
