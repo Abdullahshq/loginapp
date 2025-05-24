@@ -8,8 +8,8 @@ function parseConnectionString(connectionString) {
   
   console.log('Attempting to parse connection string:', connectionString);
   
-  const serverMatch = connectionString.match(/Server=([^;]+)/i);
-  const databaseMatch = connectionString.match(/Database=([^;]+)/i);
+  const serverMatch = connectionString.match(/Server=tcp:([^,]+)/i);
+  const databaseMatch = connectionString.match(/Initial Catalog=([^;]+)/i);
   
   if (!serverMatch || !databaseMatch) {
     throw new Error(`Invalid connection string format. serverMatch: ${!!serverMatch}, databaseMatch: ${!!databaseMatch}`);
