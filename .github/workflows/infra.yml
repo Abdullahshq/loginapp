@@ -22,11 +22,11 @@ jobs:
 
     - name: Deploy SQL Infrastructure
       run: |
-        az deployment group create --resource-group abd-rg --template-file infrabicep/azsqldb.bicep
+        az deployment group create --resource-group abd-rg --template-file /home/loginapp/infrabicep/azsqldb.bicep
 
     - name: Deploy Web App Infrastructure
       run: |
-        az deployment sub create --resource-group abd-rg --template-file infrabicep/webapp.bicep
+        az deployment sub create --resource-group abd-rg --template-file /home/loginapp/infrabicep/webapp.bicep
 
     - name: Get SQL Connection String
       id: get-sql-conn
