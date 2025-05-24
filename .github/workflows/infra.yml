@@ -26,7 +26,7 @@ jobs:
 
     - name: Deploy Web App Infrastructure
       run: |
-        az deployment group create --resource-group abd-rg --template-file infrabicep/webapp.bicep --parameters webAppName= 'abdregapp'
+        az deployment group create --resource-group abd-rg --template-file infrabicep/webapp.bicep
 
     - name: Get SQL Connection String
       id: get-sql-conn
