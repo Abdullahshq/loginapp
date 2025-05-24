@@ -1,8 +1,21 @@
 const sql = require('mssql');
-const { DefaultAzureCredential } = require('@azure/identity');
 
+// Parse connection string
+function parseConnectionString(connectionString) {
+  const regex = /Server=([^;]+);Database=([^;]+);User Id=([^;]+);Password=([^;]+)/i;
+  const matches = connectionString.match(regex);
+  if (!matches) throw new Error('Invalid connection string format');
+  return {
+    server: matches[1],
+    database: matches[2],
+    user: matches[3],
+    password: matches[4]
+  };
+}
+
+const connectionConfig = parseConnectionString(process.env.AZURE_SQL_CONNECTION_STRING);
 const config = {
-  connectionString: process.env.AZURE_SQL_CONNECTION_STRING,
+  ...connectionConfig,
   options: {
     encrypt: true,
     trustServerCertificate: false
