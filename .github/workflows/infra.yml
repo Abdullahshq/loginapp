@@ -22,7 +22,7 @@ jobs:
 
     - name: Deploy SQL Infrastructure
       run: |
-        az deployment group create --resource-group abd-rg --template-file infrabicep/azsqldb.bicep
+        az deployment group create --resource-group abd-rg --template-file infrabicep/azsqldb.bicep --parameters dummySqlPassword='StrongP@ssword123'
 
     - name: Deploy Web App Infrastructure
       run: |
@@ -30,11 +30,6 @@ jobs:
 
     - name: Get SQL Connection String
       id: get-sql-conn
-      run: |
-        SQL_CONN=$(az sql db show-connection-string --server your-sql-server-name --name your-db-name --client ado.net --output tsv)
-        echo "sql_conn=$SQL_CONN" >> $GITHUB_ENV
-
-    - name: Set Connection String in Web App
       run: |
         SQL_CONN=$(az sql db show-connection-string --server abdsqlserver --name abdsqldb --client ado.net --output tsv)
         echo "sql_conn=$SQL_CONN" >> $GITHUB_ENV
