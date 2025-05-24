@@ -26,7 +26,7 @@ jobs:
 
     - name: Deploy Web App Infrastructure
       run: |
-        az deployment group create --resource-group abd-rg --template-file infrabicep/webapp.bicep 
+        az deployment group create --resource-group abd-rg --template-file infrabicep/webapp.bicep --parameters webAppName= 'abdregapp'
 
     - name: Get SQL Connection String
       id: get-sql-conn
@@ -36,4 +36,4 @@ jobs:
 
     - name: Set Connection String in Web App
       run: |
-        az webapp config connection-string set --name abdullahappwdb --resource-group abd-rg --settings "DefaultConnection=${{ env.sql_conn }}" --connection-string-type SQLAzure
+        az webapp config connection-string set --name abdregapp --resource-group abd-rg --settings "DefaultConnection=${{ env.sql_conn }}" --connection-string-type SQLAzure
