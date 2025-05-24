@@ -2,14 +2,19 @@ const sql = require('mssql');
 
 // Parse connection string
 function parseConnectionString(connectionString) {
-  const regex = /Server=([^;]+);Database=([^;]+);User Id=([^;]+);Password=([^;]+)/i;
-  const matches = connectionString.match(regex);
-  if (!matches) throw new Error('Invalid connection string format');
+  const serverMatch = connectionString.match(/Server=([^;]+)/i);
+  const databaseMatch = connectionString.match(/Database=([^;]+)/i);
+  
+  if (!serverMatch || !databaseMatch) {
+    throw new Error('Invalid connection string format');
+  }
+
   return {
-    server: matches[1],
-    database: matches[2],
-    user: matches[3],
-    password: matches[4]
+    server: serverMatch[1],
+    database: databaseMatch[1],
+    authentication: {
+      type: 'azure-active-directory-default'
+    }
   };
 }
 
