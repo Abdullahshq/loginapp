@@ -36,5 +36,5 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name: 'abdullahappwdb'
+        app-name: 'abdregapp'
         package: ./release.zip
