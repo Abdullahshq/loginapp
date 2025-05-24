@@ -1,0 +1,53 @@
+name: Deploy Azure Infrastructure
+
+on:
+  workflow_dispatch:  # manual trigger
+  push:
+    branches:
+      - infra  # optional: run when pushing to the 'infra' branch
+
+jobs:
+  deploy-infra:
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Deploy SQL Infrastructure
+      run: |
+        az deployment sub create \
+          --location eastus \
+          --template-file azsqldb.bicep \
+
+    - name: Deploy Web App Infrastructure
+      run: |
+        az deployment sub create \
+          --location eastus \
+          --template-file webapp.bicep
+
+    - name: Get SQL Connection String
+      id: get-sql-conn
+      run: |
+        SQL_CONN=$(az sql db show-connection-string \
+          --server your-sql-server-name \
+          --name your-db-name \
+          --client ado.net \
+          --output tsv)
+        echo "sql_conn=$SQL_CONN" >> $GITHUB_ENV
+
+    - name: Set Connection String in Web App
+      run: |
+        az webapp config connection-string set \
+          --name abdullahappwdb \
+          --resource-group your-resource-group \
+          --settings DefaultConnection=${{ env.sql_conn }} \
+          --connection-string-type SQLAzure
