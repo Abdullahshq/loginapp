@@ -22,7 +22,7 @@ jobs:
 
     - name: Deploy SQL Infrastructure
       run: |
-        az deployment group create --resource-group abd-rg --template-file infrabicep/azsqldb.bicep --parameters dummySqlPassword='StrongP@ssword123'
+        az deployment group create --resource-group abd-rg --template-file infrabicep/azsqldb.bicep
 
     - name: Deploy Web App Infrastructure
       run: |
