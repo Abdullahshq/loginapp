@@ -18,8 +18,8 @@
     <% } %>
     <form action="/users/register" method="POST">
       <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" value="<%= typeof name != 'undefined' ? name : '' %>" required>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" value="<%= typeof username != 'undefined' ? username : '' %>" required>
       </div>
       <div class="form-group">
         <label for="email">Email</label>

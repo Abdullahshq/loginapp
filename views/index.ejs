@@ -10,7 +10,7 @@
   <div class="container">
     <h1>Welcome to the User Registration App</h1>
     <% if(typeof user !== 'undefined') { %>
-      <p>Welcome, <%= user.name %></p>
+      <p>Welcome, <%= user.username %></p>
       <a href="/users/logout" class="btn">Logout</a>
     <% } else { %>
       <p>Please login or register</p>

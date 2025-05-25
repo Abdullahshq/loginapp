@@ -59,11 +59,11 @@ router.get('/register', (req, res) => {
 
 // Register handle
 router.post('/register', async (req, res) => {
-  const { name, email, password, password2 } = req.body;
+  const { username, email, password, password2 } = req.body;
   let errors = [];
   
   // Check required fields
-  if (!name || !email || !password || !password2) {
+  if (!username || !email || !password || !password2) {
     errors.push({ msg: 'Please fill in all fields' });
   }
   
@@ -80,7 +80,7 @@ router.post('/register', async (req, res) => {
   if (errors.length > 0) {
     res.render('register', {
       errors,
-      name,
+      username,
       email,
       password,
       password2
@@ -94,14 +94,14 @@ router.post('/register', async (req, res) => {
         errors.push({ msg: 'Email is already registered' });
         res.render('register', {
           errors,
-          name,
+          username,
           email,
           password,
           password2
         });
       } else {
         // Create new user
-        await User.create({ name, email, password });
+        await User.create({ username, email, password });
         res.redirect('/users/login');
       }
     } catch (error) {
