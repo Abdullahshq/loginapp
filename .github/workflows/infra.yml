@@ -38,4 +38,4 @@ jobs:
 
     - name: Set Connection String in Web App
       run: |
-        az webapp config connection-string set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
+        az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
