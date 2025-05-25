@@ -49,9 +49,10 @@ resource clientIpFirewallRule 'Microsoft.Sql/servers/firewallRules@2023-05-01-pr
   }
 }
 
+// Allow Azure services
 resource allowAzureServices 'Microsoft.Sql/servers/firewallRules@2023-05-01-preview' = {
   parent: sqlServer
-  name: 'AllowAzureServices'
+  name: 'AllowAllWindowsAzureIps'
   properties: {
     startIpAddress: '0.0.0.0'
     endIpAddress: '0.0.0.0'

@@ -27,10 +27,10 @@ class User {
       
       const pool = await poolPromise;
       const result = await pool.request()
-        .input('name', sql.VarChar, userData.name)
-        .input('email', sql.VarChar, userData.email)
-        .input('password', sql.VarChar, hashedPassword)
-        .query('INSERT INTO users (name, email, password) OUTPUT INSERTED.id VALUES (@name, @email, @password)');
+        .input('username', sql.VarChar(50), userData.username)
+        .input('email', sql.VarChar(100), userData.email)
+        .input('password', sql.VarChar(255), hashedPassword)
+        .query('INSERT INTO users (username, email, password) VALUES (@username, @email, @password); SELECT SCOPE_IDENTITY() AS id;');
       
       return result.recordset[0];
     } catch (error) {
