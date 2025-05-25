@@ -31,9 +31,11 @@ jobs:
     - name: Get SQL Connection String
       id: get-sql-conn
       run: |
-        SQL_CONN=$(az sql db show-connection-string --server abdsqlserver --name abdsqldb --client ado.net --output tsv)
-        echo "sql_conn=$SQL_CONN" >> $GITHUB_ENV
+        SERVER_NAME=abdsqlserver.database.windows.net
+        DB_NAME=abdsqldb
+        CONNECTION_STRING="Server=tcp:$SERVER_NAME,1433;Initial Catalog=$DB_NAME;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
+        echo "sql_conn=$CONNECTION_STRING" >> $GITHUB_ENV
 
     - name: Set Connection String in Web App
       run: |
-        az webapp config connection-string set --name abdregapp --resource-group abd-rg --settings "DefaultConnection=${{ env.sql_conn }}" --connection-string-type SQLAzure
+        az webapp config connection-string set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ env.sql_conn }}"
