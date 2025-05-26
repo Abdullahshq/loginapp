@@ -21,12 +21,17 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Deploy SQL Infrastructure
-      run: |
-        az deployment group create --resource-group abd-rg --template-file infrabicep/azsqldb.bicep --parameters dummySqlPassword='StrongP@ssword123'
+      uses: azure/arm-deploy@v2
+      with:
+        resourceGroupName: abd-rg
+        template: ./infrabicep/azsqldb.bicep
+        parameters: dummySqlPassword='StrongP@ssword123'
 
     - name: Deploy Web App Infrastructure
-      run: |
-        az deployment group create --resource-group abd-rg --template-file infrabicep/webapp.bicep
+      uses: azure/arm-deploy@v2
+      with:
+        resourceGroupName: abd-rg
+        template: ./infrabicep/webapp.bicep
 
     - name: Get SQL Connection String
       id: get-sql-conn
