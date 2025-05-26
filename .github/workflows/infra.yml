@@ -8,7 +8,8 @@ on:
 
 permissions:
   contents: read
-  actions: write  # Required for creating variables
+  actions: write
+  repository-projects: write  # Add this permission
 
 jobs:
   deploy-infra:
@@ -46,23 +47,39 @@ jobs:
         CONNECTION_STRING="Server=tcp:$SERVER_NAME,1433;Initial Catalog=$DB_NAME;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
         echo "sql_conn=$CONNECTION_STRING" >> $GITHUB_ENV
 
-    - name: Set Connection String as GitHub Variable
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Set Connection String
+      id: set-conn-string
       run: |
         CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
-        gh api --method POST /repos/${{ github.repository }}/actions/variables \
-          -f name='AZURE_SQL_CONNECTION_STRING' \
-          -f value="$CONNECTION_STRING"
+        echo "connection_string=$CONNECTION_STRING" >> "$GITHUB_ENV"
+        
+    - name: Set Connection String as GitHub Variable
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Check if variable exists
+        HTTP_STATUS=$(gh api \
+          -X GET /repos/${{ github.repository }}/actions/variables/AZURE_SQL_CONNECTION_STRING \
+          --silent -w '%{http_code}' || echo "404")
+        
+        if [ "$HTTP_STATUS" = "200" ]; then
+          # Update existing variable
+          gh api \
+            --method PATCH /repos/${{ github.repository }}/actions/variables/AZURE_SQL_CONNECTION_STRING \
+            -f value="${{ env.connection_string }}"
+        else
+          # Create new variable
+          gh api \
+            --method POST /repos/${{ github.repository }}/actions/variables \
+            -f name='AZURE_SQL_CONNECTION_STRING' \
+            -f value="${{ env.connection_string }}"
+        fi
 
     - name: Set Connection String in Web App
       uses: azure/cli@v1
       with:
         inlineScript: |
-          az webapp config appsettings set \
-            --name abdregapp \
-            --resource-group abd-rg \
-            --settings "AZURE_SQL_CONNECTION_STRING=${{ vars.AZURE_SQL_CONNECTION_STRING }}"
+          az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ env.connection_string }}"
 
   build-and-deploy:
     runs-on: ubuntu-latest
