@@ -6,6 +6,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  actions: write  # Required for creating variables
+
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
