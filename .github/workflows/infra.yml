@@ -32,6 +32,7 @@ jobs:
       with:
         resourceGroupName: abd-rg
         template: ./infrabicep/webapp.bicep
+        failOnStdErr: false
 
     - name: Get SQL Connection String
       id: get-sql-conn
