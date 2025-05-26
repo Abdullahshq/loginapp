@@ -5,7 +5,6 @@ param linuxFxVersion string = 'node|20-lts'
 param location string = resourceGroup().location
 param appServicePlanName string = 'abdregapp-plan'
 
-
 // App Service Plan - Premium V3 P0v3
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: appServicePlanName

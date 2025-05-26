@@ -42,9 +42,23 @@ jobs:
         CONNECTION_STRING="Server=tcp:$SERVER_NAME,1433;Initial Catalog=$DB_NAME;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
         echo "sql_conn=$CONNECTION_STRING" >> $GITHUB_ENV
 
-    - name: Set Connection String in Web App
+    - name: Set Connection String as GitHub Variable
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
+        CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
+        gh api --method POST /repos/${{ github.repository }}/actions/variables \
+          -f name='AZURE_SQL_CONNECTION_STRING' \
+          -f value="$CONNECTION_STRING"
+
+    - name: Set Connection String in Web App
+      uses: azure/cli@v1
+      with:
+        inlineScript: |
+          az webapp config appsettings set \
+            --name abdregapp \
+            --resource-group abd-rg \
+            --settings "AZURE_SQL_CONNECTION_STRING=${{ vars.AZURE_SQL_CONNECTION_STRING }}"
 
   build-and-deploy:
     runs-on: ubuntu-latest
