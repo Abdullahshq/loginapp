@@ -12,6 +12,7 @@ permissions:
   repository-projects: write  # Add this permission
   packages: write
 
+
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
@@ -41,19 +42,18 @@ jobs:
         failOnStdErr: false
 
     - name: Generate Connection String
-      id: generate-conn-string
       run: |
-        # Construct the connection string (passwordless)
         CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
         echo "connection_string=$CONNECTION_STRING" >> "$GITHUB_ENV"
     
+    
     - name: Store Connection String as GitHub Variable
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_PAT }}  # Use PAT if GITHUB_TOKEN fails
       run: |
-        # Use gh CLI to create/update the variable
-        echo '{"name":"AZURE_SQL_CONNECTION_STRING","value":"'"${{ env.connection_string }}"'"}' | 
-          gh api --method POST /repos/${{ github.repository }}/actions/variables --input -
+        sudo apt-get install -y jq
+        JSON_PAYLOAD=$(jq -n --arg value "${{ env.connection_string }}" '{name: "AZURE_SQL_CONNECTION_STRING", value: $value}')
+        echo "$JSON_PAYLOAD" | gh api --method POST /repos/${{ github.repository }}/actions/variables --input -
         
     - name: Set Connection String in Web App
       uses: azure/cli@v1
@@ -67,10 +67,7 @@ jobs:
         inlineScript: |
           # Retrieve the GitHub variable for use here
           AZURE_SQL_CONNECTION_STRING="${{ vars.AZURE_SQL_CONNECTION_STRING }}"
-          az webapp config appsettings set \
-            --name abdregapp \
-            --resource-group abd-rg \
-            --settings "AZURE_SQL_CONNECTION_STRING=$AZURE_SQL_CONNECTION_STRING"
+          az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=$AZURE_SQL_CONNECTION_STRING"
 
   build-and-deploy:
     runs-on: ubuntu-latest
