@@ -44,25 +44,24 @@ jobs:
     - name: Generate Connection String
       run: |
         CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
-        echo "connection_string=$CONNECTION_STRING" >> "$GITHUB_ENV"
-    
-    
-    - name: Store Connection String as GitHub Variable
+        echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
+
+    - name: Store Connection String as GitHub Secret
       env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Or GH_PAT
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # You can replace this with a fine-grained PAT if needed
       run: |
-          sudo apt-get install -y jq
-          JSON_PAYLOAD=$(jq -n \
-            --arg name "AZURE_SQL_CONNECTION_STRING" \
-            --arg value "${{ env.connection_string }}" \
-            '{name: $name, value: $value}')
-          echo "$JSON_PAYLOAD" | gh api --method POST "/repos/${{ github.repository }}/actions/variables" --input -
+        sudo apt-get install -y jq
+        SECRET_NAME="AZURE_SQL_CONNECTION_STRING"
+        SECRET_VALUE="$CONNECTION_STRING"
+        ENCRYPTED_VALUE=$(echo -n "$SECRET_VALUE" | gh secret set "$SECRET_NAME" --body -)
 
     - name: Set Connection String in Web App
       uses: azure/cli@v1
       with:
-       inlineScript: |
-            az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ env.connection_string }}"
+        inlineScript: |
+          az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+
+
   build-and-deploy:
     runs-on: ubuntu-latest
     needs: deploy-infra
