@@ -11,6 +11,7 @@ permissions:
   actions: write
   repository-projects: write  # Add this permission
   packages: write
+  variables: write
 
 jobs:
   deploy-infra:
@@ -40,19 +41,20 @@ jobs:
         template: ./infrabicep/webapp.bicep
         failOnStdErr: false
 
-    - name: Get SQL Connection String
-      id: get-sql-conn
+    - name: Generate Connection String
+      id: generate-conn-string
       run: |
-        SERVER_NAME=abdsqlserver.database.windows.net
-        DB_NAME=abdsqldb
-        CONNECTION_STRING="Server=tcp:$SERVER_NAME,1433;Initial Catalog=$DB_NAME;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
-        echo "sql_conn=$CONNECTION_STRING" >> $GITHUB_ENV
-
-    - name: Set Connection String
-      id: set-conn-string
-      run: |
+        # Construct the connection string (passwordless)
         CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
         echo "connection_string=$CONNECTION_STRING" >> "$GITHUB_ENV"
+    
+    - name: Store Connection String as GitHub Variable
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Use gh CLI to create/update the variable
+        echo '{"name":"AZURE_SQL_CONNECTION_STRING","value":"'"${{ env.connection_string }}"'"}' | 
+          gh api --method POST /repos/${{ github.repository }}/actions/variables --input -
         
     - name: Set Connection String in Web App
       uses: azure/cli@v1
@@ -60,28 +62,16 @@ jobs:
         inlineScript: |
           az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ env.connection_string }}"
 
-    - name: Store Connection String as GitHub Variable
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        # Full API path with owner and repo
-        REPO_API_URL="/repos/${{ github.repository }}/actions/variables"
-        
-        # First check if variable exists
-        STATUS=$(gh api "$REPO_API_URL/AZURE_SQL_CONNECTION_STRING" --silent -w '%{http_code}' || echo "404")
-        
-        if [ "$STATUS" = "200" ]; then
-          # Update existing variable
-          gh api \
-            --method PATCH "$REPO_API_URL/AZURE_SQL_CONNECTION_STRING" \
-            -f value="${{ env.connection_string }}"
-        else
-          # Create new variable
-          gh api \
-            --method POST "$REPO_API_URL" \
-            -f name='AZURE_SQL_CONNECTION_STRING' \
-            -f value="${{ env.connection_string }}"
-        fi
+    - name: Set Connection String in Web App
+      uses: azure/cli@v1
+      with:
+        inlineScript: |
+          # Retrieve the GitHub variable for use here
+          AZURE_SQL_CONNECTION_STRING="${{ vars.AZURE_SQL_CONNECTION_STRING }}"
+          az webapp config appsettings set \
+            --name abdregapp \
+            --resource-group abd-rg \
+            --settings "AZURE_SQL_CONNECTION_STRING=$AZURE_SQL_CONNECTION_STRING"
 
   build-and-deploy:
     runs-on: ubuntu-latest
