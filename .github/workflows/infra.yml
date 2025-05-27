@@ -43,7 +43,7 @@ jobs:
 
     - name: Generate Connection String
       run: |
-        CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication="Active Directory Default";"
+        CONNECTION_STRING='Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication="Active Directory Default";'
         echo "CONNECTION_STRING=$CONNECTION_STRING" >> $GITHUB_ENV
 
     - name: Store Connection String as GitHub Variable
