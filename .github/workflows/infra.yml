@@ -43,8 +43,8 @@ jobs:
 
     - name: Generate Connection String
       run: |
-        CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
-        echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
+        CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication="Active Directory Default";"
+        echo "CONNECTION_STRING=$CONNECTION_STRING" >> $GITHUB_ENV
 
     - name: Store Connection String as GitHub Variable
       env:
@@ -59,9 +59,8 @@ jobs:
     - name: Set Connection String in Web App
       uses: azure/cli@v1
       with:
-        inlineScript: |
-          az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ vars.AZURE_SQL_CONNECTION_STRING }}"
-
+       inlineScript: |
+         az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ env.CONNECTION_STRING }}"
 
   build-and-deploy:
     runs-on: ubuntu-latest
