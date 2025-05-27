@@ -46,19 +46,21 @@ jobs:
         CONNECTION_STRING="Server=tcp:abdsqlserver.database.windows.net,1433;Initial Catalog=abdsqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
         echo "CONNECTION_STRING=$CONNECTION_STRING" >> "$GITHUB_ENV"
 
-    - name: Store Connection String as GitHub Secret
+    - name: Store Connection String as GitHub Variable
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}  # Use your classic PAT
+        GH_TOKEN: ${{ secrets.GH_PAT }}  # Use your classic PAT with appropriate scopes
       run: |
-        SECRET_NAME="AZURE_SQL_CONNECTION_STRING"
-        SECRET_VALUE="$CONNECTION_STRING"
-        echo -n "$SECRET_VALUE" | gh secret set "$SECRET_NAME" --repo "${{ github.repository }}" --body -
-
+        VAR_NAME="AZURE_SQL_CONNECTION_STRING"
+        VAR_VALUE="$CONNECTION_STRING"
+        echo "Setting repository variable $VAR_NAME"
+        gh api --method PATCH /repos/${{ github.repository }}/actions/variables/$VAR_NAME --field value="$VAR_VALUE" || \
+        gh api --method POST /repos/${{ github.repository }}/actions/variables --field name="$VAR_NAME" --field value="$VAR_VALUE"
+    
     - name: Set Connection String in Web App
       uses: azure/cli@v1
       with:
         inlineScript: |
-          az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+          az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ vars.AZURE_SQL_CONNECTION_STRING }}"
 
 
   build-and-deploy:
