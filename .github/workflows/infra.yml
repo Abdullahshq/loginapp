@@ -60,7 +60,8 @@ jobs:
       uses: azure/cli@v1
       with:
        inlineScript: |
-         az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ env.CONNECTION_STRING }}"
+         az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "{\"AZURE_SQL_CONNECTION_STRING\":\"${{ env.CONNECTION_STRING }}\"}"
+
 
   build-and-deploy:
     runs-on: ubuntu-latest
