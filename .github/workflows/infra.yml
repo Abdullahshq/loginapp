@@ -49,17 +49,10 @@ jobs:
     
     - name: Store Connection String as GitHub Variable
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}  # Use PAT if GITHUB_TOKEN fails
+          GH_TOKEN: ${{ secrets.GH_PAT }}  # Use PAT with `repo` scope
       run: |
-        sudo apt-get install -y jq
-        JSON_PAYLOAD=$(jq -n --arg value "${{ env.connection_string }}" '{name: "AZURE_SQL_CONNECTION_STRING", value: $value}')
-        echo "$JSON_PAYLOAD" | gh api --method POST /repos/${{ github.repository }}/actions/variables --input -
-        
-    - name: Set Connection String in Web App
-      uses: azure/cli@v1
-      with:
-        inlineScript: |
-          az webapp config appsettings set --name abdregapp --resource-group abd-rg --settings "AZURE_SQL_CONNECTION_STRING=${{ env.connection_string }}"
+          JSON_PAYLOAD='{"name":"AZURE_SQL_CONNECTION_STRING","value":"'"${{ env.connection_string }}"'"}'
+          echo "$JSON_PAYLOAD" | gh api --method POST /repos/${{ github.repository }}/actions/variables --input -
 
     - name: Set Connection String in Web App
       uses: azure/cli@v1
