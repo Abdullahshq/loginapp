@@ -9,9 +9,8 @@ on:
 permissions:
   contents: read
   actions: write
-  repository-projects: write  # Add this permission
+  repository-projects: write
   packages: write
-
 
 jobs:
   deploy-infra:
@@ -48,7 +47,7 @@ jobs:
 
     - name: Store Connection String as GitHub Variable
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}  # Use your classic PAT with appropriate scopes
+        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         VAR_NAME="AZURE_SQL_CONNECTION_STRING"
         VAR_VALUE="$CONNECTION_STRING"
@@ -62,7 +61,8 @@ jobs:
         echo "${CONNECTION_STRING}"
         echo "::endgroup::"
 
-    - name: Set Connection String in Web App
+    # SOLUTION 1: Using az webapp config appsettings set with proper escaping
+    - name: Set Connection String in Web App (Method 1)
       uses: azure/cli@v1
       with:
         inlineScript: |
@@ -71,13 +71,13 @@ jobs:
             exit 1
           fi
 
-          echo "Setting AZURE_SQL_CONNECTION_STRING to: $CONNECTION_STRING"
+          echo "Setting AZURE_SQL_CONNECTION_STRING using method 1"
 
-          # Safely pass the connection string using JSON
+          # Method 1: Use --settings flag with proper escaping
           az webapp config appsettings set \
             --name abdregapp \
             --resource-group abd-rg \
-            --settings "{\"AZURE_SQL_CONNECTION_STRING\":\"${CONNECTION_STRING}\"}"
+            --settings "AZURE_SQL_CONNECTION_STRING=${CONNECTION_STRING}"
 
   build-and-deploy:
     runs-on: ubuntu-latest
