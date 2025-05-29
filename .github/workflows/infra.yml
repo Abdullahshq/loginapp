@@ -7,7 +7,8 @@ on:
       - main
 
 env:
-  RESOURCE_GROUP_NAME: 'abd-rg'
+  NAME: 'abd'
+  RESOURCE_GROUP_NAME: '${NAME}rg'
   WEBAPP_NAME: 'abdregapp'
   SQL_SERVER_NAME: 'abdsqlserver'
   SQL_DATABASE_NAME: 'abdsqldb'
