@@ -40,10 +40,10 @@ jobs:
       with:
         resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
         template: ./infrabicep/azsqldb.bicep
-        parameters: >
-          sqlServerName='${{ env.SQL_SERVER_NAME }}'
-          sqlDatabaseName='${{ env.SQL_DATABASE_NAME }}'
-          dummySqlPassword='StrongP@ssword123'
+        parameters: |
+          sqlServerName=${{ env.SQL_SERVER_NAME }}
+          sqlDatabaseName=${{ env.SQL_DATABASE_NAME }}
+          dummySqlPassword=StrongP@ssword123
 
     - name: Deploy Web App Infrastructure
       uses: azure/arm-deploy@v2
