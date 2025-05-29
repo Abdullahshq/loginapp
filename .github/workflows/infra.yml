@@ -7,12 +7,14 @@ on:
       - main
 
 env:
-  RESOURCE_GROUP_NAME: 'abd-rg'
+  name: 'abdullah'
+  RESOURCE_GROUP_NAME: '${name}-rg'
+
   WEBAPP_NAME: 'abdregapp'
   SQL_SERVER_NAME: 'abdsqlserver'
   SQL_DATABASE_NAME: 'abdsqldb'
   LOCATION: 'centralus'
-  CONNECTION_STRING: 'Server=tcp:${{ env.SQL_SERVER_NAME }}.database.windows.net,1433;Initial Catalog=${{ env.SQL_DATABASE_NAME }};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;'
+  CONNECTION_STRING: 'Server=tcp:${SQL_SERVER_NAME}.database.windows.net,1433;Initial Catalog=${SQL_DATABASE_NAME};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;'
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
