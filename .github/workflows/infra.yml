@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  NAME: 'abd'
+  NAME: 'abdul'
   RESOURCE_GROUP_NAME: '${NAME}rg'
   WEBAPP_NAME: 'abdregapp'
   SQL_SERVER_NAME: 'abdsqlserver'
