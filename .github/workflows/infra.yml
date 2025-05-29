@@ -12,8 +12,8 @@ env:
   WEBAPP_NAME: 'abdregapp'
   SQL_SERVER_NAME: 'abdsqlserver'
   SQL_DATABASE_NAME: 'abdsqldb'
-  LOCATION: 'eastus'
-  
+  LOCATION: 'centralus'
+
 
 jobs:
   deploy-infra:
