@@ -7,13 +7,14 @@ on:
       - main
 
 env:
-  NAME: 'abdul'
-  RESOURCE_GROUP_NAME: '${NAME}rg'
-  WEBAPP_NAME: 'abdregapp'
-  SQL_SERVER_NAME: 'abdsqlserver'
-  SQL_DATABASE_NAME: 'abdsqldb'
-  LOCATION: 'centralus'
-  CONNECTION_STRING: 'Server=tcp:${SQL_SERVER_NAME}.database.windows.net,1433;Initial Catalog=${SQL_DATABASE_NAME};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;'
+  NAME: abdul
+  RESOURCE_GROUP_NAME: ${{ env.NAME }}rg
+  WEBAPP_NAME: abdregapp
+  SQL_SERVER_NAME: abdsqlserver
+  SQL_DATABASE_NAME: abdsqldb
+  LOCATION: centralus
+  CONNECTION_STRING: ${{ format('Server=tcp:{0}.database.windows.net,1433;Initial Catalog={1};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;', env.SQL_SERVER_NAME, env.SQL_DATABASE_NAME) }}
+
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
