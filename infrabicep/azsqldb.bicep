@@ -1,13 +1,18 @@
 targetScope = 'resourceGroup'
 
+@description('The name of the SQL server')
 param sqlServerName string
-param location string = resourceGroup().location
-param sqlDatabaseName string 
-param azureAdAdminObjectId string = 'e4659c2d-43d6-4d7d-82b0-c014d86eb565'
-param clientIpAddress string = '192.168.100.126'
+
+@description('The name of the SQL database')
+param sqlDatabaseName string
 
 @secure()
-param dummySqlPassword string = '' // Removed default value for security
+@description('The administrator password of the SQL logical server')
+param dummySqlPassword string
+
+param location string = resourceGroup().location
+param azureAdAdminObjectId string = 'e4659c2d-43d6-4d7d-82b0-c014d86eb565'
+param clientIpAddress string = '192.168.100.126'
 
 resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
   name: sqlServerName
