@@ -7,12 +7,12 @@ on:
       - main
 
 env:
-  RESOURCE_GROUP_NAME: 'abd-rg'
-  WEBAPP_NAME: 'abdregapp'
-  SQL_SERVER_NAME: 'abdsqlserver'
-  SQL_DATABASE_NAME: 'abdsqldb'
-  LOCATION: 'centralus'
-  CONNECTION_STRING: 'Server=tcp:${{ env.SQL_SERVER_NAME }}.database.windows.net,1433;Initial Catalog=${{ env.SQL_DATABASE_NAME }};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;'
+  RESOURCE_GROUP_NAME: abdulrg
+  WEBAPP_NAME: abdregapp
+  SQL_SERVER_NAME: abdsqlserver
+  SQL_DATABASE_NAME: abdsqldb
+  LOCATION: centralus
+
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
@@ -53,24 +53,19 @@ jobs:
           webAppName="${{ env.WEBAPP_NAME }}"
         failOnStdErr: false
 
-
-    # SOLUTION 1: Using az webapp config appsettings set with proper escaping
     - name: Set Connection String in Web App (Method 1)
-      uses: azure/cli@v1
-      with:
-        inlineScript: |
-          if [ -z "${CONNECTION_STRING}" ]; then
-            echo "ERROR: CONNECTION_STRING is empty."
-            exit 1
-          fi
-
-          echo "Setting AZURE_SQL_CONNECTION_STRING using method 1"
-
-          # Method 1: Use --settings flag with proper escaping
-          az webapp config appsettings set \
-            --name ${{ env.WEBAPP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
-            --settings "AZURE_SQL_CONNECTION_STRING=${CONNECTION_STRING}"
+      env:
+        SQL_SERVER_NAME: ${{ env.SQL_SERVER_NAME }}
+        SQL_DATABASE_NAME: ${{ env.SQL_DATABASE_NAME }}
+        WEBAPP_NAME: ${{ env.WEBAPP_NAME }}
+        RESOURCE_GROUP_NAME: ${{ env.RESOURCE_GROUP_NAME }}
+      run: |
+        CONNECTION_STRING="Server=tcp:${SQL_SERVER_NAME}.database.windows.net,1433;Initial Catalog=${SQL_DATABASE_NAME};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;"
+        echo "Setting AZURE_SQL_CONNECTION_STRING using method 1"
+        az webapp config appsettings set \
+          --name $WEBAPP_NAME \
+          --resource-group $RESOURCE_GROUP_NAME \
+          --settings "AZURE_SQL_CONNECTION_STRING=$CONNECTION_STRING"
 
   build-and-deploy:
     runs-on: ubuntu-latest
