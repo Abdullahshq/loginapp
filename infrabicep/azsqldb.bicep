@@ -1,8 +1,6 @@
 targetScope = 'resourceGroup'
 
-param sqlServerName string
 param location string = resourceGroup().location
-param sqlDatabaseName string 
 param azureAdAdminObjectId string = 'e4659c2d-43d6-4d7d-82b0-c014d86eb565'
 param clientIpAddress string = '192.168.100.126'
 

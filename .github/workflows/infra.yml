@@ -44,6 +44,7 @@ jobs:
           sqlServerName=${{ env.SQL_SERVER_NAME }}
           sqlDatabaseName=${{ env.SQL_DATABASE_NAME }}
           dummySqlPassword=StrongP@ssword123
+          failOnStdErr: false
 
     - name: Deploy Web App Infrastructure
       uses: azure/arm-deploy@v2
