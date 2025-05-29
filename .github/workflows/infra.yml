@@ -6,14 +6,13 @@ on:
     branches:
       - main
 
-# Add environment variables at workflow level
 env:
   RESOURCE_GROUP_NAME: 'abd-rg'
   WEBAPP_NAME: 'abdregapp'
   SQL_SERVER_NAME: 'abdsqlserver'
   SQL_DATABASE_NAME: 'abdsqldb'
   LOCATION: 'centralus'
-
+  CONNECTION_STRING: 'Server=tcp:${{ env.SQL_SERVER_NAME }}.database.windows.net,1433;Initial Catalog=${{ env.SQL_DATABASE_NAME }};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";'
 
 jobs:
   deploy-infra:
@@ -55,26 +54,6 @@ jobs:
           webAppName="${{ env.WEBAPP_NAME }}"
         failOnStdErr: false
 
-    - name: Generate Connection String
-      run: |
-        CONNECTION_STRING="Server=tcp:${{ env.SQL_SERVER_NAME }}.database.windows.net,1433;Initial Catalog=${{ env.SQL_DATABASE_NAME }};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";"
-        echo "CONNECTION_STRING=$CONNECTION_STRING" >> $GITHUB_ENV
-
-    - name: Store Connection String as GitHub Variable
-      env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
-      run: |
-        VAR_NAME="AZURE_SQL_CONNECTION_STRING"
-        VAR_VALUE="$CONNECTION_STRING"
-        echo "Setting repository variable $VAR_NAME"
-        gh api --method PATCH /repos/${{ github.repository }}/actions/variables/$VAR_NAME --field value="$VAR_VALUE" || \
-        gh api --method POST /repos/${{ github.repository }}/actions/variables --field name="$VAR_NAME" --field value="$VAR_VALUE"
-    
-    - name: Debug Connection String
-      run: |
-        echo "::group::CONNECTION_STRING"
-        echo "${CONNECTION_STRING}"
-        echo "::endgroup::"
 
     # SOLUTION 1: Using az webapp config appsettings set with proper escaping
     - name: Set Connection String in Web App (Method 1)
