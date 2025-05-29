@@ -1,6 +1,6 @@
 targetScope = 'resourceGroup'
 
-param webAppName string = 'abdregapp'
+param webAppName string
 param linuxFxVersion string = 'node|20-lts'
 param location string = resourceGroup().location
 param appServicePlanName string = 'abdregapp-plan'
