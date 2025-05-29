@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - second
+      - main
 
 env:
   RESOURCE_GROUP_NAME: abdulrg
